@@ -1,0 +1,46 @@
+name: Generate .env files
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-env:
+    runs-on: ubuntu-latest
+
+    env:
+      # Shared Frontend secrets
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_IMAGE_URL: ${{ secrets.NEXT_PUBLIC_IMAGE_URL }}
+
+      # Backend secrets
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: ${{ secrets.DEBUG }}
+      ALLOWED_HOST_1: ${{ secrets.ALLOWED_HOST_1 }}
+      ALLOWED_HOST_2: ${{ secrets.ALLOWED_HOST_2 }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create frontend .env file
+        run: |
+          cat <<EOF > ./front/.env
+          NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+          NEXT_PUBLIC_IMAGE_URL=${NEXT_PUBLIC_IMAGE_URL}
+          EOF
+
+      - name: Create backend .env file
+        run: |
+          cat <<EOF > ./back/.env
+          SECRET_KEY=${SECRET_KEY}
+          DEBUG=${DEBUG}
+          ALLOWED_HOST_1=${ALLOWED_HOST_1}
+          ALLOWED_HOST_2=${ALLOWED_HOST_2}
+          EOF
+
+      - name: Print env files (debug only - remove in production)
+        run: |
+          echo "Frontend .env:"
+          cat ./front/.env
+          echo "Backend .env:"
+          cat ./back/.env
