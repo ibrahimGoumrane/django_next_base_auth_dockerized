@@ -1,0 +1,6 @@
+dotenv
+djangorestframework
+django-cors-headers
+environ
+django-environ
+mysqlclient

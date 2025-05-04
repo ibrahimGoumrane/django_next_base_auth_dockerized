@@ -1,0 +1,63 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_TCP_PORT: ${DB_PORT}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    env_file:
+      - ./back/.env
+      - .env
+    networks:
+      - app_network
+
+  back:
+    build:
+      context: ./back
+      dockerfile: DockerFile
+    command: >
+      sh -c "./wait-for-it.sh db:${DB_PORT} --timeout=60 -- echo 'DB is up' &&
+            python manage.py makemigrations &&
+            python manage.py migrate &&
+            python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./back:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+    env_file:
+      - ./back/.env
+      - .env
+    networks:
+      - app_network
+
+  front:
+    build:
+      context: ./front
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  node_modules:
+  build:

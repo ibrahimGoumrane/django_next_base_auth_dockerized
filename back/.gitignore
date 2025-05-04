@@ -1,0 +1,6 @@
+**/exam_papers/
+# I want to ignore the __pycache__ folder 
+**/__pycache__/
+**/migrations/
+*.sqlite3
+.env

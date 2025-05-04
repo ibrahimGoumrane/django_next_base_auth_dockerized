@@ -1,0 +1,38 @@
+# Project ReadMe
+
+## Overview
+
+This project provides a base setup for development and production environments using Docker. Below are the instructions to run the project in both modes.
+
+## Running with Docker
+
+### Development Mode:
+
+1. Ensure Docker is installed and running on your system.
+2. Use the following command to start the application in development mode:
+   ```bash
+   make up
+   ```
+3. To view logs, use:
+   ```bash
+   make logs
+   ```
+
+### Production Mode:
+
+1. Ensure Docker is installed and running on your system.
+2. Use the following command to build the application for production:
+   ```bash
+   make ENV=prod build
+   ```
+3. Start the application in production mode:
+   ```bash
+   make ENV=prod up
+   ```
+
+---
+
+## Notes
+
+- Ensure you have the necessary environment variables configured for both development and production modes.
+- For additional details, refer to the `Makefile` in the project directory.

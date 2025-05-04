@@ -1,0 +1,27 @@
+FROM node:18-alpine
+
+# Install required dependencies
+RUN apk add --no-cache \
+  python3 \
+  make \
+  g++ \
+  cairo-dev \
+  pango-dev \
+  jpeg-dev \
+  giflib-dev \
+  pixman-dev
+
+# Set working directory
+WORKDIR /app
+
+# Copy only package files to install deps first (for caching)
+COPY package.json package-lock.json* ./
+
+# # Install dependencies
+RUN npm install
+
+# Copy app files
+COPY . .
+
+# Start your app
+CMD ["npm", "run", "dev"]

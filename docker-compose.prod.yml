@@ -1,0 +1,9 @@
+services:
+  front:
+    build:
+      dockerfile: DockerFile.prod
+    image: basemodels_front_prod
+    # volumes:
+    #   - build:/app/.next
+    env_file:
+      - ./front/.env.prod
