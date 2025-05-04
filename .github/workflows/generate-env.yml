@@ -6,6 +6,7 @@ on:
 jobs:
   generate-env:
     runs-on: ubuntu-latest
+    environment: production
 
     env:
       # Shared Frontend secrets
