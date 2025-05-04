@@ -1,0 +1,5 @@
+services:
+  front:
+    image: ${DOCKERHUB_USERNAME}/basemodels-front:latest
+  back:
+    image: ${DOCKERHUB_USERNAME}/basemodels-back:latest

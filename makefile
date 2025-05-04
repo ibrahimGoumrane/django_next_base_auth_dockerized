@@ -4,6 +4,8 @@ ENV ?= dev
 # Compose file selection
 ifeq ($(ENV),prod)
 COMPOSE_FILES = -f docker-compose.yml -f docker-compose.prod.yml
+else ifeq ($(ENV),test)
+  COMPOSE_FILES = -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.test.yml
 else
 COMPOSE_FILES = -f docker-compose.yml -f docker-compose.dev.yml
 endif

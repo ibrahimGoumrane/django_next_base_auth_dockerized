@@ -11,9 +11,6 @@ services:
       - "${DB_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    env_file:
-      - ./back/.env
-      - .env
     networks:
       - app_network
 
@@ -32,12 +29,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
     env_file:
       - ./back/.env
       - .env
@@ -50,6 +41,7 @@ services:
     restart: unless-stopped
     ports:
       - "${APP_PORT}:${APP_PORT}"
+
     networks:
       - app_network
 
