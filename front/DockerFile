@@ -20,8 +20,8 @@ COPY package.json package-lock.json* ./
 # # Install dependencies
 RUN npm install
 
-# Copy app files
-COPY . .
+# # Copy app files
+# COPY . .
 
 # Start your app
 CMD ["npm", "run", "dev"]

@@ -1,7 +1,7 @@
 "use client";
 import BaseForm from "@/components/form/base-form";
 import { LoginSchema, loginRenderedFields } from "@/lib/schema/auth";
-import { login } from "@/lib/actions";
+import { login } from "@/lib/actions/actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";

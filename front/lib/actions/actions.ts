@@ -3,7 +3,8 @@ import { User } from "@/type/users";
 import { LoginSchema, SignupSchema } from "@/lib/schema/auth";
 import { State } from "@/lib/schema/base";
 import { fetchData } from "@/network/main";
-import { UpdateUserSchema } from "./schema/user";
+import { UpdateUserSchema } from "@/lib/schema/user";
+import { userApiResource } from "@/network/users";
 
 export const login = async (
   prevState: State,
@@ -65,37 +66,10 @@ export const register = async (
   }
 };
 
-// Update a user - server action
+// User Server Actions
 export const updateUser = async (
   prevState: State,
   formData: FormData
 ): Promise<State> => {
-  const id = formData.get("id");
-  console.log("ID:", id);
-
-  // Build the update data from form fields
-  const updateData = {
-    first_name: formData.get("first_name") || undefined,
-    last_name: formData.get("last_name") || undefined,
-    email: formData.get("email") || undefined,
-  };
-
-  const parsed = UpdateUserSchema.safeParse(updateData);
-  if (!parsed.success) {
-    const fieldErrors = parsed.error.flatten().fieldErrors;
-    return { success: false, errors: fieldErrors };
-  }
-
-  try {
-    await fetchData<User>(`/users/${Number(id)}/`, {
-      method: "PUT",
-      body: JSON.stringify(parsed.data),
-    });
-    return { success: true, errors: {} };
-  } catch (error) {
-    return {
-      success: false,
-      errors: { general: [(error as Error).message] },
-    };
-  }
+  return userApiResource.updateAction(prevState, formData, UpdateUserSchema);
 };

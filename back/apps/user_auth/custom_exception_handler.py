@@ -1,4 +1,3 @@
-# your_app/exceptions.py
 from rest_framework.views import exception_handler
 
 def custom_exception_handler(exc, context):
@@ -9,20 +8,18 @@ def custom_exception_handler(exc, context):
         message = None
 
         if isinstance(original_data, dict):
-            # Merge all field errors or unknown keys
-            merged = []
+            messages = []
             for key, value in original_data.items():
                 if isinstance(value, list):
-                    merged.append(f"{key}: {' '.join(str(v) for v in value)}")
+                    messages.append(f" {' '.join(str(v) for v in value)}")
                 else:
-                    merged.append(f"{key}: {value}")
-            message = ' | '.join(merged)
+                    messages.append(f" {value}")
+            message = " | ".join(messages)
         else:
-            # Fallback
             message = str(original_data)
 
         response.data = {
-            "message": message
+            "error": message  # ✅ Ensures consistent "error" key
         }
 
     return response

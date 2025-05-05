@@ -1,4 +1,3 @@
-"use server";
 import {
   BadRequestError,
   ConflictError,
@@ -9,12 +8,12 @@ import {
   LockedError,
 } from "@/errors/main";
 import { serverAddress } from "@/config/main";
-import { cookies } from "next/headers";
-import { getCsrfToken, getSessionId, handleClientCookies } from "./utils";
-async function getCookieStore() {
-  const cookieStore = await cookies();
-  return cookieStore;
-}
+import {
+  getCookieStore,
+  getCsrfToken,
+  getSessionId,
+  handleClientCookies,
+} from "./utils";
 
 export async function fetchData<T>(input: RequestInfo, init?: RequestInit) {
   if (!init) init = {};
@@ -38,8 +37,9 @@ export async function fetchData<T>(input: RequestInfo, init?: RequestInit) {
   }
   init.credentials = "include";
 
-  // Retreive the cookies from the request
+  // Retrieve the cookie store
   const cookieStore = await getCookieStore();
+
   // Retrieve the XSRF token
   const xsrfToken = getCsrfToken(cookieStore);
   let Cookie = "";
@@ -55,6 +55,14 @@ export async function fetchData<T>(input: RequestInfo, init?: RequestInit) {
   if (sessionId) {
     Cookie = Cookie.concat("sessionid=" + sessionId + ";");
   }
+
+  init.headers = {
+    ...init.headers,
+    Cookie: Cookie,
+  };
+  if (sessionId) {
+    Cookie = Cookie.concat("sessionid=" + sessionId + ";");
+  }
   // Set the XSRF token in the headers
   init.headers = {
     ...init.headers,
@@ -65,7 +73,12 @@ export async function fetchData<T>(input: RequestInfo, init?: RequestInit) {
     const response = await fetch(serverAddress + input, init);
 
     // Log the response for debugging
-    console.log("Response:", await response.clone().json());
+    console.log(
+      "Response:",
+      await response.clone().json(),
+      "Status:",
+      response.status
+    );
 
     const setCookies = response.headers.getSetCookie();
 
@@ -80,8 +93,7 @@ export async function fetchData<T>(input: RequestInfo, init?: RequestInit) {
       return response.json() as Promise<T>;
     } else {
       const errorBody = await response.json();
-      const errorMessage =
-        errorBody.error || errorBody.message || "Unknown error";
+      const errorMessage = Object.values(errorBody)[0] as string;
       switch (response.status) {
         case 401:
           throw new UnauthorizedError(errorMessage);

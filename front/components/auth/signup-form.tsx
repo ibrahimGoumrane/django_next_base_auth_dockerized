@@ -1,7 +1,7 @@
 "use client";
 
 import { signupRenderedFields, SignupSchema } from "@/lib/schema/auth";
-import { register } from "@/lib/actions";
+import { register } from "@/lib/actions/actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";

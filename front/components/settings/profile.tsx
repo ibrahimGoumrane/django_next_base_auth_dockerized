@@ -12,7 +12,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { UpdateUserSchema, userUpdateRenderedFields } from "@/lib/schema/user";
 import { User } from "@/type/users";
 import { toast } from "sonner";
-import { updateUser } from "@/lib/actions";
+import { updateUser } from "@/lib/actions/actions";
 interface ProfileProps {
   user: User;
 }

@@ -1,16 +1,32 @@
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { CookieOptions } from "./cookies/cookies.client";
 
-export function getCsrfToken(cookieStore: ReadonlyRequestCookies) {
-  const csrfToken = cookieStore.get("csrftoken")?.value;
-  return csrfToken ? csrfToken : null;
+type CookieStore = {
+  get: (name: string) => { value: string } | undefined;
+  set: (name: string, value: string, options: CookieOptions) => void;
+};
+
+export async function getCookieStore() {
+  if (typeof window === "undefined") {
+    const { getServerCookies } = await import("./cookies/cookies.server");
+    return getServerCookies();
+  } else {
+    const { getClientCookies } = await import("./cookies/cookies.client");
+    return getClientCookies();
+  }
 }
-export function getSessionId(cookieStore: ReadonlyRequestCookies) {
+
+export function getCsrfToken(cookieStore: CookieStore): string | null {
+  const csrfToken = cookieStore.get("csrftoken")?.value;
+  return csrfToken ?? null;
+}
+
+export function getSessionId(cookieStore: CookieStore): string | null {
   const sessionId = cookieStore.get("sessionid")?.value;
-  return sessionId ? sessionId : null;
+  return sessionId ?? null;
 }
 export function handleClientCookies(
   setCookies: string[],
-  cookieStore: ReadonlyRequestCookies
+  cookieStore: CookieStore
 ) {
   // Process all cookies from Set-Cookie headers
   if (setCookies && setCookies.length > 0) {
@@ -20,25 +36,24 @@ export function handleClientCookies(
       const cookieName = mainPart.split("=")[0].trim();
       const cookieValue = mainPart.split("=")[1].trim();
 
-      const options: { [key: string]: Date | string | number | boolean } = {};
+      // Convert attributes into an object
+      const options: CookieOptions = {};
       attributes.forEach((attr) => {
-        const parts = attr.trim().split("=");
-        const key = parts[0].trim().toLowerCase();
-        const value = parts.length > 1 ? parts[1].trim() : true;
+        const [key, val] = attr.trim().split("=");
+        const lowerKey = key.toLowerCase();
 
-        // Convert keys to the format expected by Next.js cookies API
-        switch (key) {
+        switch (lowerKey) {
           case "expires":
-            options.expires = new Date(value as string);
+            options.expires = new Date(val);
             break;
           case "max-age":
-            options.maxAge = Number(value);
+            options.maxAge = Number(val);
             break;
           case "path":
-            options.path = value;
+            options.path = val;
             break;
           case "samesite":
-            options.sameSite = value;
+            options.sameSite = val.toLowerCase() as "strict" | "lax" | "none";
             break;
           case "secure":
             options.secure = true;
@@ -48,7 +63,6 @@ export function handleClientCookies(
             break;
         }
       });
-      // Set the cookie in the client
       cookieStore.set(cookieName, cookieValue, options);
     });
   }

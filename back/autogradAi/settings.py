@@ -122,9 +122,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env.str('DB_NAME', default='classroom_db'),
         'USER': env.str('DB_USER', default='admin'),
-        'PASSWORD': env.str('DB_PASSWORD', default='root'),
-        'HOST': env.str('DB_HOST', default='db'),  # or 'db' if in Docker
-        'PORT': env.int('DB_PORT', default=3307),  # Make sure this matches the port you're using
+        'PASSWORD': env.str('DB_PASSWORD', default='admin'),
+        'HOST': env.str('DB_HOST', default='localhost'),  # or 'db' if in Docker
+        'PORT': env.int('DB_PORT', default=3306),  # Make sure this matches the port you're using
     }
 }
 
